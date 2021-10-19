@@ -69,10 +69,7 @@ public final class ConnectSession {
     /// The location of the host.
     public lazy var country: String = {
         [unowned self] in
-        guard let c = Utils.GeoIPLookup.Lookup(self.ipAddress) else {
-            return ""
-        }
-        return c
+        return ""
         }()
     
     public init?(host: String, port: Int, fakeIPEnabled: Bool = true) {
