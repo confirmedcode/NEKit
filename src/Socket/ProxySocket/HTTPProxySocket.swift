@@ -1,6 +1,9 @@
 import Foundation
 
 public class HTTPProxySocket: ProxySocket {
+    
+    let blockedDomains = getAllBlockedDomains()
+    
     enum HTTPProxyReadStatus: CustomStringConvertible {
         case invalid,
         readingFirstHeader,
@@ -148,6 +151,18 @@ public class HTTPProxySocket: ProxySocket {
                 readStatus = .readingContent
             }
             
+            for blockedDomain in blockedDomains {
+                if (destinationHost == "example.com") {
+                    self.forceDisconnect(becauseOf: nil);
+                    return;
+                }
+                if (destinationHost.hasSuffix("." + blockedDomain) || destinationHost == blockedDomain) {
+                    updateMetrics(.incrementAndLog(host: destinationHost), rescheduleNotifications: .withEnergySaving)
+                    self.forceDisconnect(becauseOf: nil);
+                    return
+                }
+            }
+    
             session = ConnectSession(host: destinationHost!, port: destinationPort!)
             observer?.signal(.receivedRequest(session!, on: self))
             delegate?.didReceive(session: session!, from: self)
