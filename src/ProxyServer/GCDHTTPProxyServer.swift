@@ -1,5 +1,7 @@
 import Foundation
 
+var latestBlockedDomains = getAllBlockedDomains()
+
 /// The HTTP proxy server.
 public final class GCDHTTPProxyServer: GCDProxyServer {
     /**
@@ -10,6 +12,10 @@ public final class GCDHTTPProxyServer: GCDProxyServer {
      */
     override public init(address: IPAddress?, port: Port) {
         super.init(address: address, port: port)
+    }
+    
+    public func setBlockedDomains(domains: Array<String>) {
+        latestBlockedDomains = getAllBlockedDomains()
     }
 
     /**

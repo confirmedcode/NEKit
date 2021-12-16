@@ -2,8 +2,6 @@ import Foundation
 
 public class HTTPProxySocket: ProxySocket {
     
-    let blockedDomains = getAllBlockedDomains()
-    
     enum HTTPProxyReadStatus: CustomStringConvertible {
         case invalid,
         readingFirstHeader,
@@ -151,7 +149,7 @@ public class HTTPProxySocket: ProxySocket {
                 readStatus = .readingContent
             }
             
-            for blockedDomain in blockedDomains {
+            for blockedDomain in latestBlockedDomains {
                 if (destinationHost == "example.com") {
                     self.forceDisconnect(becauseOf: nil);
                     return;
