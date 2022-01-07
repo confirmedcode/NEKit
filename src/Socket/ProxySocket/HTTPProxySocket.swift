@@ -149,22 +149,26 @@ public class HTTPProxySocket: ProxySocket {
                 readStatus = .readingContent
             }
             
+            var isWhitelist = false
             // if domain is in whitelist, just return (user probably didn't whitelist something they want to block
             for whitelistedDomain in latestWhitelistedDomains {
                 if (destinationHost.hasSuffix("." + whitelistedDomain) || destinationHost == whitelistedDomain) {
-                    return
+                    isWhitelist = true
+                    break
                 }
             }
             
-            for blockedDomain in latestBlockedDomains {
-                if (destinationHost == "example.com") {
-                    self.forceDisconnect(becauseOf: nil);
-                    return;
-                }
-                if (destinationHost.hasSuffix("." + blockedDomain) || destinationHost == blockedDomain) {
-                    updateMetrics(.incrementAndLog(host: destinationHost), rescheduleNotifications: .withEnergySaving)
-                    self.forceDisconnect(becauseOf: nil);
-                    return
+            if (!isWhitelist) {
+                for blockedDomain in latestBlockedDomains {
+                    if (destinationHost == "example.com") {
+                        self.forceDisconnect(becauseOf: nil);
+                        return;
+                    }
+                    if (destinationHost.hasSuffix("." + blockedDomain) || destinationHost == blockedDomain) {
+                        updateMetrics(.incrementAndLog(host: destinationHost), rescheduleNotifications: .withEnergySaving)
+                        self.forceDisconnect(becauseOf: nil);
+                        return
+                    }
                 }
             }
     
