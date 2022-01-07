@@ -149,6 +149,13 @@ public class HTTPProxySocket: ProxySocket {
                 readStatus = .readingContent
             }
             
+            // if domain is in whitelist, just return (user probably didn't whitelist something they want to block
+            for whitelistedDomain in latestWhitelistedDomains {
+                if (destinationHost.hasSuffix("." + whitelistedDomain) || destinationHost == whitelistedDomain) {
+                    return
+                }
+            }
+            
             for blockedDomain in latestBlockedDomains {
                 if (destinationHost == "example.com") {
                     self.forceDisconnect(becauseOf: nil);
